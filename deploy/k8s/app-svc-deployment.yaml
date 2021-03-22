@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-svc-deployment
+  labels:
+    app: app-svc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app-svc
+  template:
+    metadata:
+      labels:
+        app: app-svc
+    spec:
+      containers:
+      - name: app-svc
+        image: asoto/app-svc
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8080
