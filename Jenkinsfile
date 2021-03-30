@@ -13,7 +13,7 @@ volumes: [
     node(POD_LABEL){
         stage('build'){
             container('golang'){
-                git url: 'https://github.com/mando04/app-svc.git'
+                checkout scm
                 sh 'ls -lrt .'
             }
         }
