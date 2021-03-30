@@ -14,6 +14,7 @@ volumes: [
         stage('build'){
             container('golang'){
                 git url: 'https://github.com/mando04/app-svc.git'
+                sh 'ls -lrt .'
             }
         }
     }
