@@ -14,7 +14,7 @@ volumes: [
         stage('build'){
             container('golang'){
                 checkout scm
-                sh 'ls -lrt .'
+                sh 'docker build . -t app-svc:latest'
             }
         }
     }
