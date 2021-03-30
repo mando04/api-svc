@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: app-svc
-        image: asoto/app-svc
+        image: app-svc
         imagePullPolicy: Never
         ports:
         - containerPort: 8080
