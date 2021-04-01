@@ -22,12 +22,8 @@ volumes: [
                 if (!BRANCH_NAME.contains('PR')){
                     withCredentials([usernamePassword(credentialsId: 'argocd-appsvc', passwordVariable: 'ARGOCD_TOKEN', usernameVariable: 'ARGOCD_USERNAME')]) {
                         def env = 'dev'
-                        steps {
-                            sh 'argocd app create app-svc --repo https://github.com/mando04/app-svc.git --path deploy/helm/app-svc --dest-namespace app --dest-server https://kubernetes.docker.internal:6443 --insecure --grpc-web --auth-token ${ARGOCD_TOKEN} --revision ${BRANCH_NAME}'
-                        }
-                        steps {
-                            sh 'argocd app sync app-svc --insecure --grpc-web --auth-token ${ARGOCD_TOKEN}'
-                        }
+                        sh 'argocd app create app-svc --repo https://github.com/mando04/app-svc.git --path deploy/helm/app-svc --dest-namespace app --dest-server https://kubernetes.docker.internal:6443 --insecure --grpc-web --auth-token ${ARGOCD_TOKEN} --revision ${BRANCH_NAME}'
+                        sh 'argocd app sync app-svc --insecure --grpc-web --auth-token ${ARGOCD_TOKEN}'
                     }
                 }
             }
