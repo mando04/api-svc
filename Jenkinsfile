@@ -2,7 +2,7 @@ podTemplate(
 cloud: 'kubernetes',
 containers: [
     containerTemplate(name: 'docker', image: 'docker:19.03.1-dind', ttyEnabled: true, command: 'cat'),
-    containerTemplate(name: 'argocd', image 'argoproj/argocd', ttyEnabled: true, command: 'cat'),
+    containerTemplate(name: 'argocd', image: 'argoproj/argocd', ttyEnabled: true, command: 'cat'),
     ],
 volumes: [
     hostPathVolume(
