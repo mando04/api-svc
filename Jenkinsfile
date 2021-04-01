@@ -1,7 +1,8 @@
 podTemplate(
 cloud: 'kubernetes',
 containers: [
-    containerTemplate(name: 'docker', image: 'docker:19.03.1-dind', ttyEnabled: true, command: 'cat')
+    containerTemplate(name: 'docker', image: 'docker:19.03.1-dind', ttyEnabled: true, command: 'cat'),
+    containerTemplate(name: 'argocd', image 'argoproj/argocd', ttyEnabled: true, command: 'cat'),
     ],
 volumes: [
     hostPathVolume(
@@ -13,7 +14,7 @@ volumes: [
         stage('build'){
             container('docker'){
                 checkout scm
-                sh 'docker build . -t app-svc:latest'
+                sh 'docker build --build-arg BUILD_VERSION=${BRANCH_NAME} . -t app-svc:latest'
             }
         }
     }
