@@ -14,9 +14,9 @@ volumes: [
         stage('build and release'){
             container('docker'){
                 checkout scm
-                def BUILD_VERSION = new Date().format("y.M.d")+"${BRANH_NAME}-${BUILD_NUMBER}"
+                def BUILD_VERSION = new Date().format("y.M.d")+"${BRANCH_NAME}-${BUILD_NUMBER}"
                 sh 'docker build --build-arg BUILD_VERSION=${BUILD_VERSION} . -t app-svc:${BRANCH_NAME}'
-                writeYaml file: 'version.yml', data: BUILD_VERSION
+                writeYaml file: 'version.yml', data: ['version': BUILD_VERSION], overwrite: true
             }
         }
         stage('deploy'){
