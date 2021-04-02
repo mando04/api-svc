@@ -18,13 +18,11 @@ volumes: [
             }
         }
         stage('deploy'){
-            environment {
-                ENV = "dev"
-            }
              withCredentials([usernamePassword(credentialsId: 'argocd-appsvc', passwordVariable: 'ARGOCD_TOKEN', usernameVariable: 'ARGOCD_USERNAME')]) {
                 container('argocd'){
+                    def ENV="dev"
                     if (!BRANCH_NAME.contains('PR')){           
-                        sh "argocd app create app-svc-${ENV} --repo=https://github.com/mando04/app-svc.git --path=deploy/helm/app-svc --dest-namespace=app --dest-server=https://kubernetes.docker.internal:6443 --insecure --auth-token=${ARGOCD_TOKEN} --revision=${BRANCH_NAME} --server=argocd-server.argocd --plaintext"
+                        sh "argocd app create app-svc-${ENV} --repo=https://github.com/mando04/app-svc.git --path=deploy/helm/app-svc --dest-namespace=app --dest-server=https://kubernetes.docker.internal:6443 --insecure --auth-token=${ARGOCD_TOKEN} --revision=${BRANCH_NAME} --server=argocd-server.argocd --plaintext --helm-set=image.tag=${BRANCH_NAME}"
                         sh "argocd app sync app-svc-${ENV} --insecure --auth-token ${ARGOCD_TOKEN} --server=argocd-server.argocd --plaintext"
                     }
                 }
