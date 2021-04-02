@@ -11,10 +11,12 @@ volumes: [
     )
 ]){    
     node(POD_LABEL){
-        stage('build'){
+        stage('build and release'){
             container('docker'){
                 checkout scm
-                sh 'docker build --build-arg BUILD_VERSION=${BRANCH_NAME} . -t app-svc:${BRANCH_NAME}'
+                def BUILD_VERSION = new Date().format("y.M.d")+"${BRANH_NAME}-${BUILD_NUMBER}"
+                sh 'docker build --build-arg BUILD_VERSION=${BUILD_VERSION} . -t app-svc:${BRANCH_NAME}'
+                writeYaml file: 'version.yml', data: BUILD_VERSION
             }
         }
         stage('deploy'){
