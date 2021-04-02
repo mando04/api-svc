@@ -2,7 +2,7 @@ podTemplate(
 cloud: 'kubernetes',
 containers: [
     containerTemplate(name: 'docker', image: 'docker:19.03.1-dind', ttyEnabled: true, command: 'cat'),
-    containerTemplate(name: 'argocd', image: 'argoproj/argocd-cli:v0.10.6', ttyEnabled: true, command: 'cat'),
+    containerTemplate(name: 'argocd', image: 'argocd-cli:custom', ttyEnabled: true, command: 'cat'),
     ],
 volumes: [
     hostPathVolume(
@@ -18,12 +18,12 @@ volumes: [
             }
         }
         stage('deploy'){
-            container('argocd'){
-                if (!BRANCH_NAME.contains('PR')){
-                    withCredentials([usernamePassword(credentialsId: 'argocd-appsvc', passwordVariable: 'ARGOCD_TOKEN', usernameVariable: 'ARGOCD_USERNAME')]) {
+             withCredentials([usernamePassword(credentialsId: 'argocd-appsvc', passwordVariable: 'ARGOCD_TOKEN', usernameVariable: 'ARGOCD_USERNAME')]) {
+                container('argocd'){
+                    if (!BRANCH_NAME.contains('PR')){           
                         def env = 'dev'
-                        sh '/usr/local/bin/argocd app create app-svc --repo https://github.com/mando04/app-svc.git --path deploy/helm/app-svc --dest-namespace app --dest-server https://kubernetes.docker.internal:6443 --insecure --grpc-web --auth-token ${ARGOCD_TOKEN} --revision ${BRANCH_NAME}'
-                        sh '/usr/local/bin/argocd app sync app-svc --insecure --grpc-web --auth-token ${ARGOCD_TOKEN}'
+                        sh 'argocd app create app-svc-${env} --repo=https://github.com/mando04/app-svc.git --path=deploy/helm/app-svc --dest-namespace=app --dest-server=https://kubernetes.docker.internal:6443 --insecure --auth-token=${ARGOCD_TOKEN} --revision=${BRANCH_NAME} --server=argocd-server.argocd --plaintext'
+                        sh 'argocd app sync app-svc --insecure --auth-token ${ARGOCD_TOKEN} --server=argocd-server.argocd --plaintext'
                     }
                 }
             }
