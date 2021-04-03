@@ -11,10 +11,12 @@ volumes: [
     )
 ]){    
     node(POD_LABEL){
-        stage('build'){
+        def BUILD_VERSION = new Date().format("y.M.d")+"-${BRANCH_NAME}-${BUILD_NUMBER}".replace("/","")
+        stage('build and release'){
             container('docker'){
                 checkout scm
-                sh 'docker build --build-arg BUILD_VERSION=${BRANCH_NAME} . -t app-svc:${BRANCH_NAME}'
+                sh "docker build --build-arg BUILD_VERSION=${BUILD_VERSION} . -t app-svc:${BUILD_VERSION}"
+                writeYaml file: 'version.yml', data: ['version': BUILD_VERSION], overwrite: true
             }
         }
         stage('deploy'){
@@ -22,7 +24,7 @@ volumes: [
                 container('argocd'){
                     def ENV="dev"
                     if (!BRANCH_NAME.contains('PR')){           
-                        sh "argocd app create app-svc-${ENV} --repo=https://github.com/mando04/app-svc.git --path=deploy/helm/app-svc --dest-namespace=app --dest-server=https://kubernetes.docker.internal:6443 --insecure --auth-token=${ARGOCD_TOKEN} --revision=${BRANCH_NAME} --server=argocd-server.argocd --plaintext --helm-set=image.tag=${BRANCH_NAME} --upsert"
+                        sh "argocd app create app-svc-${ENV} --repo=https://github.com/mando04/app-svc.git --path=deploy/helm/app-svc --dest-namespace=app --dest-server=https://kubernetes.docker.internal:6443 --insecure --auth-token=${ARGOCD_TOKEN} --revision=${BRANCH_NAME} --server=argocd-server.argocd --plaintext --helm-set=image.tag=${BUILD_VERSION} --upsert"
                         sh "argocd app sync app-svc-${ENV} --insecure --auth-token ${ARGOCD_TOKEN} --server=argocd-server.argocd --plaintext"
                     }
                 }
