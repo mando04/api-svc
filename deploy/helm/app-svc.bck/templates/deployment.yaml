@@ -33,20 +33,25 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- if .Values.env }}
+          env:
+            {{- range .Values.env }}
+            - name: {{ .name }}
+              value: {{ .value }}
+            {{- end }}
+          {{- end }}
           ports:
             - name: http
-              containerPort: 8443
+              containerPort: 9080
               protocol: TCP
           livenessProbe:
             httpGet:
-              scheme: HTTPS
-              path: /
-              port: 8443
+              path: /status
+              port: 9080
           readinessProbe:
             httpGet:
-              scheme: HTTPS
-              path: /
-              port: 8443
+              path: /status
+              port: 9080
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}

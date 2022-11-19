@@ -1,0 +1,23 @@
+builds_to_keep: 4
+notifications:
+pipeline:
+- agent: docker&&k8s
+  cron: 0 12,18 * * *
+  custom_params: []
+  dockerImageName: appsvc
+  dply_tool: helmfile
+  helmAppName: appsvc
+  server: DEVC-appsvc-f5-mock
+  submitter: jenkins-devops,jenkins-servicedesk,jenkins-rm-deployment,jenkins-qa-deployment
+  timeout: 7
+  stages:
+  - name: deploy to test
+    env: test
+    namespace: test
+    helmfilePath: dev.c
+    release_only: false
+  - name: deploy to REL
+    env: rel
+    namespace: rel
+    helmfilePath: tst.c
+    release_only: true

@@ -1,4 +1,4 @@
-FROM golang:1.16.2 AS build
+FROM golang:1.17 AS build
 
 ARG BUILD_VERSION
 ADD . /app
